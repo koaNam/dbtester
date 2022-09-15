@@ -27,8 +27,10 @@ public class DBTestCase {
         dbTestExtension.insertContent();
     }
 
-    protected void assertDataset(Path expectedDataset) {
+    protected boolean assertEqualDataset(Path expectedDataset) throws IOException {
+        String datasetContent = Files.readString(expectedDataset);
 
+        return dbTestExtension.assertEqualDataset(datasetContent);
     }
 
 }

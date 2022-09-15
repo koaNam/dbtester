@@ -1,6 +1,9 @@
 package de.koanam.dbtester.ia;
 
+import de.koanam.dbtester.core.entity.TableBuilderFactory;
 import de.koanam.dbtester.core.entity.TableObject;
+
+import java.util.Collection;
 
 public interface DatabaseDsGateway {
 
@@ -14,5 +17,6 @@ public interface DatabaseDsGateway {
 
     int clearContent(TableObject table);
 
+    Collection<TableObject> getContent(TableBuilderFactory tableBuilderFactory);
 
 }

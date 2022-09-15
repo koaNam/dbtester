@@ -55,6 +55,28 @@ public class TableContentDAO {
         }
     }
 
+    public List<Map<String, String>> getTableContent(){
+        String stmt = SELECT_ALL_STATEMENT.replace(TABLE_PLACEHOLDER, this.table);
+
+        try(PreparedStatement statement = this.connection.prepareStatement(stmt);
+            ResultSet resultSet = statement.executeQuery()){
+            List<String> columnNames = this.getColumnNames(resultSet.getMetaData());
+            List<Map<String, String>> tableContent = new ArrayList<>();
+
+            while (resultSet.next()){
+                Map<String, String> row = new HashMap<>();
+                for(String columnName: columnNames){
+                    String value = resultSet.getString(columnName);
+                    row.put(columnName, value);
+                }
+                tableContent.add(row);
+            }
+
+            return tableContent;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private List<String> getColumnNames(ResultSetMetaData resultSetMetaData) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();

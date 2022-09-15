@@ -76,7 +76,7 @@ public class MarkdownTableParser implements TableParser {
     private List<String> splitMarkdownRow(Matcher matcher, int groupIndex) {
         String row = matcher.group(groupIndex);
         String[] headerValues = row.split("\\|");
-        return Arrays.asList(headerValues);
+        return Arrays.stream(headerValues).map(String::trim).toList();
     }
 
 }

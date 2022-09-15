@@ -4,12 +4,10 @@ import de.koanam.dbtester.core.entity.generic.GenericDatabaseCredentialGenerator
 import de.koanam.dbtester.core.entity.generic.GenericTableBuilderFactory;
 import de.koanam.dbtester.core.entity.generic.MarkdownTableParser;
 import de.koanam.dbtester.framework.h2.H2Database;
+import de.koanam.dbtester.ia.ComparisonInputBoundary;
 import de.koanam.dbtester.ia.DatabaseConnectionInputBoundary;
 import de.koanam.dbtester.ia.DatabaseContentInputBoundary;
-import de.koanam.dbtester.usecase.ClearingDatabaseContentInteractor;
-import de.koanam.dbtester.usecase.DatabaseConnectionInteractor;
-import de.koanam.dbtester.usecase.DatabaseContentInteractor;
-import de.koanam.dbtester.usecase.GenericDatabaseConnectionPresenter;
+import de.koanam.dbtester.usecase.*;
 import org.junit.jupiter.api.extension.*;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +31,12 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
     private DatabaseContentInputBoundary databaseContentUseCase = new ClearingDatabaseContentInteractor(
             db,
             new MarkdownTableParser(new GenericTableBuilderFactory())
+    );
+
+    private ComparisonInputBoundary comparisonUseCase = new ComparisonContentInteractor(
+            db,
+            new MarkdownTableParser(new GenericTableBuilderFactory()),
+            new GenericTableBuilderFactory()
     );
 
     @Override
@@ -63,6 +67,11 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
 
     public void setCurrentInitialDatasetContent(String currentInitialDatasetContent) {
         this.currentInitialDatasetContent = currentInitialDatasetContent;
+    }
+
+    public boolean assertEqualDataset(String expectedDatasetContent){
+        ByteArrayInputStream expectedDataset = new ByteArrayInputStream(expectedDatasetContent.getBytes());
+        return this.comparisonUseCase.compare(expectedDataset);
     }
 
     private void setUp(){

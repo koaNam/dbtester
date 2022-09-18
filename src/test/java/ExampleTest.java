@@ -1,5 +1,4 @@
 import de.koanam.dbtester.framework.junit.DBTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +15,12 @@ public class ExampleTest extends DBTestCase {
     @Test
     public void test1() throws IOException {
         this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
-        Assertions.assertTrue(this.assertEqualDataset(Paths.get("./src/test/dataset1.md")));
+        this.assertEqualDataset(Paths.get("./src/test/dataset2.md"));
     }
 
     @Test
     public void test2() throws IOException {
-        this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
+        this.setInitialDataset(Paths.get("./src/test/dataset2.md"));
         this.assertEqualDataset(Paths.get("./src/test/dataset1.md"));
     }
 

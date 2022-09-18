@@ -9,4 +9,6 @@ public interface TableObject {
 
     String getTableName();
 
+    List<ContentDifference> getDifferences(TableObject other);
+
 }

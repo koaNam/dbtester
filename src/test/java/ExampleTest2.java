@@ -16,7 +16,7 @@ public class ExampleTest2 extends DBTestCase {
 
     @Test
     public void test1(){
-        Assertions.assertEquals(1, 1);
+        Assertions.assertEquals(1, 2);
     }
 
     @Test

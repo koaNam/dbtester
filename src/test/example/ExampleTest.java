@@ -13,19 +13,7 @@ public class ExampleTest extends DBTestCase {
     }
 
     @Test
-    public void test1() throws IOException {
-        this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
-        this.assertEqualDataset(Paths.get("./src/test/dataset2.md"));
-    }
-
-    @Test
-    public void test2() throws IOException {
-        this.setInitialDataset(Paths.get("./src/test/dataset2.md"));
-        this.assertEqualDataset(Paths.get("./src/test/dataset1.md"));
-    }
-
-    @Test
-    public void test3() throws IOException {
+    public void test() throws IOException {
         this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
         this.assertEqualDataset(Paths.get("./src/test/dataset1.md"));
     }

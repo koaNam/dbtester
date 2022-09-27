@@ -14,5 +14,11 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           cache: 'maven'
-      - name: Build with Maven
-        run: mvn clean jacoco:prepare-agent verify jacoco:report install
+      - name: Build
+        run: mvn clean compile
+      - name: Test
+        run: mvn test
+      - name: Package jar
+        run: mvn package
+      - name: Check test coverage
+        run: mvn jacoco:prepare-agent verify jacoco:report

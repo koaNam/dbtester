@@ -3,6 +3,7 @@ package de.koanam.dbtester.framework.h2;
 import de.koanam.dbtester.core.entity.TableBuilder;
 import de.koanam.dbtester.core.entity.TableBuilderFactory;
 import de.koanam.dbtester.core.entity.TableObject;
+import de.koanam.dbtester.framework.DatabaseException;
 import de.koanam.dbtester.ia.DatabaseDsGateway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.Server;
@@ -20,14 +21,14 @@ public class H2Database implements DatabaseDsGateway {
     private DataSource dataSource;
 
     @Override
-    public void startDatabase(String username, String password) {
+    public void startDatabase(String username, String password) throws DatabaseException {
         try {
             this.h2server = Server.createTcpServer();
             this.h2server.start();
 
             this.dataSource = this.initDataSource(username, password);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException(e);
         }
     }
 
@@ -41,50 +42,50 @@ public class H2Database implements DatabaseDsGateway {
     }
 
     @Override
-    public void stopDatabase() {
+    public void stopDatabase() throws DatabaseException {
         try(Connection connection =this.dataSource.getConnection()) {
             connection.prepareStatement("SHUTDOWN").executeUpdate();
             this.h2server = null;
         } catch (SQLException e) {
-            throw new RuntimeException(e);  //TODO Exception anpassen
+            throw new DatabaseException(e);
         }
     }
 
     @Override
-    public void createDataStructure(String statement) {
+    public void createDataStructure(String statement) throws DatabaseException {
         try(Connection connection =this.dataSource.getConnection()) {
             this.executeDDLStatement(statement, connection);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException(e);
         }
     }
 
     @Override
-    public int insertContent(TableObject table) {
+    public int insertContent(TableObject table) throws DatabaseException {
         List<Map<String, String>> tableContent = table.getContent();
         try(Connection connection = this.dataSource.getConnection()){
             TableContentDAO tableContentDAO = new TableContentDAO(connection, table.getTableName());
             this.insertContent(tableContent, tableContentDAO);
             connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException(e);
         }
         return tableContent.size();
     }
 
     @Override
-    public int clearContent(TableObject table) {
+    public int clearContent(TableObject table) throws DatabaseException {
         try(Connection connection = this.dataSource.getConnection()){
             this.restartSequences(connection);
 
             int deleteCount = this.deleteTableContent(table, connection);
             return deleteCount;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | H2DatabaseException e) {
+            throw new DatabaseException(e);
         }
     }
 
-    private void restartSequences(Connection connection) {
+    private void restartSequences(Connection connection) throws H2DatabaseException {
         DatabaseContentDAO databaseContentDAO = new DatabaseContentDAO(connection);
         List<String> sequenceNames = databaseContentDAO.getAllSequences();
         for(String sequenceName: sequenceNames){
@@ -100,7 +101,7 @@ public class H2Database implements DatabaseDsGateway {
         return deleteCount;
     }
 
-    public List<TableObject> getContent(TableBuilderFactory tableBuilderFactory) {
+    public List<TableObject> getContent(TableBuilderFactory tableBuilderFactory) throws DatabaseException {
         try(Connection connection = this.dataSource.getConnection()){
             DatabaseContentDAO databaseContentDAO = new DatabaseContentDAO(connection);
             List<String> tableNames = databaseContentDAO.getAllTables();
@@ -115,8 +116,8 @@ public class H2Database implements DatabaseDsGateway {
             }
 
             return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | H2DatabaseException e) {
+            throw new DatabaseException(e);
         }
     }
 
@@ -134,7 +135,7 @@ public class H2Database implements DatabaseDsGateway {
         return tableBuilder.build();
     }
 
-    private void insertContent(List<Map<String, String>> values, TableContentDAO tableContentDAO){
+    private void insertContent(List<Map<String, String>> values, TableContentDAO tableContentDAO) throws SQLException {
         for(Map<String, String> value: values){
             tableContentDAO.insertRow(value);
         }

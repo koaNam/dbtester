@@ -2,6 +2,7 @@ package de.koanam.dbtester.usecase;
 
 import de.koanam.dbtester.core.entity.TableObject;
 import de.koanam.dbtester.core.entity.TableParser;
+import de.koanam.dbtester.framework.DatabaseException;
 import de.koanam.dbtester.ia.DatabaseDsGateway;
 
 import java.io.IOException;
@@ -15,16 +16,12 @@ public class ClearingDatabaseContentInteractor extends DatabaseContentInteractor
     }
 
     @Override
-    public void clearContent(InputStream initialTables) {
-        try {
-            Collection<TableObject> tablesToDelete = super.getTableParser().parseTables(initialTables);
-            DatabaseDsGateway databaseDsGateway = super.getDatabaseDsGateway();
+    public void clearContent(InputStream initialTables) throws DatabaseException, IOException {
+        Collection<TableObject> tablesToDelete = super.getTableParser().parseTables(initialTables);
+        DatabaseDsGateway databaseDsGateway = super.getDatabaseDsGateway();
 
-            for(TableObject tableObject: tablesToDelete){
-                databaseDsGateway.clearContent(tableObject);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        for(TableObject tableObject: tablesToDelete){
+            databaseDsGateway.clearContent(tableObject);
         }
     }
 }

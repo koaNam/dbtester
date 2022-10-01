@@ -18,7 +18,7 @@ public class DatabaseContentDAO {
     }
 
 
-    public List<String> getAllTables(){
+    public List<String> getAllTables() throws H2DatabaseException{
         try(PreparedStatement statement = this.connection.prepareStatement(SHOW_TABLES);
             ResultSet rset = statement.executeQuery()){
 
@@ -29,11 +29,11 @@ public class DatabaseContentDAO {
 
             return tables;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new H2DatabaseException("Error while searching all tables in database", e);
         }
     }
 
-    public List<String> getAllSequences(){
+    public List<String> getAllSequences() throws H2DatabaseException {
         try(PreparedStatement statement = this.connection.prepareStatement(SELECT_SEQUENCE_NAMES);
             ResultSet rset = statement.executeQuery()){
 
@@ -44,17 +44,17 @@ public class DatabaseContentDAO {
 
             return tables;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new H2DatabaseException("Error while searching all sequences in database", e);
         }
     }
 
-    public void restartSequence(String sequenceName, long startValue){
+    public void restartSequence(String sequenceName, long startValue) throws H2DatabaseException{
         String stmt = RESTART_SEQUENCE.replace(SEQUENCE_PLACEHOLDER, sequenceName);
         try(PreparedStatement statement = this.connection.prepareStatement(stmt)) {
             statement.setLong(1, startValue);
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new H2DatabaseException("Error while restarting sequence " + sequenceName + " with value " + startValue, e);
         }
     }
 

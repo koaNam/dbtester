@@ -2,21 +2,22 @@ package de.koanam.dbtester.ia;
 
 import de.koanam.dbtester.core.entity.TableBuilderFactory;
 import de.koanam.dbtester.core.entity.TableObject;
+import de.koanam.dbtester.framework.DatabaseException;
 
 import java.util.Collection;
 
 public interface DatabaseDsGateway {
 
-    void startDatabase(String username, String password);
+    void startDatabase(String username, String password) throws DatabaseException;
 
-    void stopDatabase();
+    void stopDatabase() throws DatabaseException;
 
-    void createDataStructure(String statement);
+    void createDataStructure(String statement) throws DatabaseException;
 
-    int insertContent(TableObject table);
+    int insertContent(TableObject table) throws DatabaseException;
 
-    int clearContent(TableObject table);
+    int clearContent(TableObject table) throws DatabaseException;
 
-    Collection<TableObject> getContent(TableBuilderFactory tableBuilderFactory);
+    Collection<TableObject> getContent(TableBuilderFactory tableBuilderFactory) throws DatabaseException;
 
 }

@@ -1,11 +1,13 @@
 package de.koanam.dbtester.ia;
 
+import de.koanam.dbtester.framework.DatabaseException;
+
 import java.util.List;
 
 public interface DatabaseConnectionInputBoundary {
 
-    void initDatabase(List<String> structures); //TODO Einheitlich auf String/InputStream ändern
+    void initDatabase(List<String> structures) throws DatabaseException;
 
-    void stopDatabase();
+    void stopDatabase() throws DatabaseException;
 
 }

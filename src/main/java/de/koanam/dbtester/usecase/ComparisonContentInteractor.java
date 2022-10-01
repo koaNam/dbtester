@@ -5,6 +5,7 @@ import de.koanam.dbtester.core.entity.TableBuilderFactory;
 import de.koanam.dbtester.core.entity.TableObject;
 import de.koanam.dbtester.core.entity.TableParser;
 import de.koanam.dbtester.core.entity.dbcontent.TableIntersectionDatabaseContentComparator;
+import de.koanam.dbtester.framework.DatabaseException;
 import de.koanam.dbtester.ia.ComparisonInputBoundary;
 import de.koanam.dbtester.ia.DatabaseDsGateway;
 
@@ -26,16 +27,12 @@ public class ComparisonContentInteractor implements ComparisonInputBoundary {
     }
 
     @Override
-    public Collection<ContentDifference> compare(InputStream input) {
-        try {
-            Collection<TableObject> otherDataset = this.tableParser.parseTables(input);
-            Collection<TableObject> currentDataset = this.databaseDsGateway.getContent(this.tableBuilderFactory);
+    public Collection<ContentDifference> compare(InputStream input) throws DatabaseException, IOException {
+        Collection<TableObject> otherDataset = this.tableParser.parseTables(input);
+        Collection<TableObject> currentDataset = this.databaseDsGateway.getContent(this.tableBuilderFactory);
 
-            Collection<ContentDifference> differences = new TableIntersectionDatabaseContentComparator().compare(otherDataset, currentDataset);
-            return differences;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Collection<ContentDifference> differences = new TableIntersectionDatabaseContentComparator().compare(otherDataset, currentDataset);
+        return differences;
     }
 
 }

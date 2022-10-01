@@ -26,7 +26,7 @@ public class TableContentDAO {
         this.table = table;
     }
 
-    public int insertRow(Map<String, String> row){
+    public int insertRow(Map<String, String> row) throws SQLException {
         Collection<String> columnNames = row.keySet();
         String stmt = this.buildStatement(INSERT_STATEMENT, this.table, columnNames);
 
@@ -39,23 +39,19 @@ public class TableContentDAO {
 
             int count = statement.executeUpdate();
             return count;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    public int deleteTable(){
+    public int deleteTable() throws SQLException {
         String stmt = DELETE_STATEMENT.replace(TABLE_PLACEHOLDER, this.table);
 
         try(PreparedStatement statement = this.connection.prepareStatement(stmt)){
             int count = statement.executeUpdate();
             return count;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    public List<Map<String, String>> getTableContent(){
+    public List<Map<String, String>> getTableContent() throws SQLException {
         String stmt = SELECT_ALL_STATEMENT.replace(TABLE_PLACEHOLDER, this.table);
 
         try(PreparedStatement statement = this.connection.prepareStatement(stmt);
@@ -73,8 +69,6 @@ public class TableContentDAO {
             }
 
             return tableContent;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 

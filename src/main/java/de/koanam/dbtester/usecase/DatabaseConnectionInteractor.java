@@ -1,6 +1,7 @@
 package de.koanam.dbtester.usecase;
 
 import de.koanam.dbtester.core.entity.DatabaseCredentialGenerator;
+import de.koanam.dbtester.framework.DatabaseException;
 import de.koanam.dbtester.ia.DatabaseConnectionInputBoundary;
 import de.koanam.dbtester.ia.DatabaseDsGateway;
 import org.h2.tools.Server;
@@ -21,7 +22,7 @@ public class DatabaseConnectionInteractor implements DatabaseConnectionInputBoun
     }
 
     @Override
-    public void initDatabase(List<String> structures) {
+    public void initDatabase(List<String> structures) throws DatabaseException {
         String username = this.credentialGenerator.generateUsername();
         String password = this.credentialGenerator.generatePassword();
 
@@ -37,11 +38,11 @@ public class DatabaseConnectionInteractor implements DatabaseConnectionInputBoun
     }
 
     @Override
-    public void stopDatabase() {
+    public void stopDatabase() throws DatabaseException {
         this.databaseDsGateway.stopDatabase();
     }
 
-    private void createDataStructures(List<String> structures){
+    private void createDataStructures(List<String> structures) throws DatabaseException {
         for(String struct: structures){
             this.databaseDsGateway.createDataStructure(struct);
         }

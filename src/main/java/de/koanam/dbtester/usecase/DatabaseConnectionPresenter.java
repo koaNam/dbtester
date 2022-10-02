@@ -8,4 +8,7 @@ public interface DatabaseConnectionPresenter {
     String getPassword();
     void setPassword(String password);
 
+    String getConnectionURL();
+    void setConnectionURL(String url);
+
 }

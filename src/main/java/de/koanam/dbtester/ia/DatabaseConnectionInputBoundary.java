@@ -10,4 +10,6 @@ public interface DatabaseConnectionInputBoundary {
 
     void stopDatabase() throws DatabaseException;
 
+    DatabaseConnection getConnection() throws DatabaseException;
+
 }

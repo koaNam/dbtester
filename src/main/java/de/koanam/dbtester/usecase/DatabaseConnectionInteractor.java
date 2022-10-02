@@ -2,11 +2,10 @@ package de.koanam.dbtester.usecase;
 
 import de.koanam.dbtester.core.entity.DatabaseCredentialGenerator;
 import de.koanam.dbtester.framework.DatabaseException;
+import de.koanam.dbtester.ia.DatabaseConnection;
 import de.koanam.dbtester.ia.DatabaseConnectionInputBoundary;
 import de.koanam.dbtester.ia.DatabaseDsGateway;
-import org.h2.tools.Server;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class DatabaseConnectionInteractor implements DatabaseConnectionInputBoundary {
@@ -26,20 +25,23 @@ public class DatabaseConnectionInteractor implements DatabaseConnectionInputBoun
         String username = this.credentialGenerator.generateUsername();
         String password = this.credentialGenerator.generatePassword();
 
-        System.out.println(username);
-        System.out.println(password);
-
         this.databaseDsGateway.startDatabase(username, password);
 
         this.createDataStructures(structures);
 
         this.connectionPresenter.setUsername(username);
         this.connectionPresenter.setPassword(password);
+        this.connectionPresenter.setConnectionURL(this.databaseDsGateway.getConnectionURL());
     }
 
     @Override
     public void stopDatabase() throws DatabaseException {
         this.databaseDsGateway.stopDatabase();
+    }
+
+    @Override
+    public DatabaseConnection getConnection() throws DatabaseException {
+        return this.databaseDsGateway.getConnection();
     }
 
     private void createDataStructures(List<String> structures) throws DatabaseException {

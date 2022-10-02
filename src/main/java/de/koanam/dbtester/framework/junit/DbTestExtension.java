@@ -9,6 +9,7 @@ import de.koanam.dbtester.framework.DatabaseInteractionException;
 import de.koanam.dbtester.framework.InitializationException;
 import de.koanam.dbtester.framework.h2.H2Database;
 import de.koanam.dbtester.ia.ComparisonInputBoundary;
+import de.koanam.dbtester.ia.DatabaseConnection;
 import de.koanam.dbtester.ia.DatabaseConnectionInputBoundary;
 import de.koanam.dbtester.ia.DatabaseContentInputBoundary;
 import de.koanam.dbtester.usecase.*;
@@ -29,8 +30,10 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
 
     private H2Database db = new H2Database();
 
+    private DatabaseConnectionPresenter databaseConnectionPresenter = new GenericDatabaseConnectionPresenter();
+
     private DatabaseConnectionInputBoundary databaseConnectionUseCase = new DatabaseConnectionInteractor(
-            new GenericDatabaseConnectionPresenter(),
+            databaseConnectionPresenter,
             db,
             new GenericDatabaseCredentialGenerator()
     );
@@ -97,6 +100,35 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
             }
         } catch (DatabaseException | IOException e) {
             throw new DatabaseInteractionException(e);
+        }
+    }
+
+    public String getUser(){
+        this.checkInitialization(!this.initialized);
+        return databaseConnectionPresenter.getUsername();
+    }
+
+    public String getPassword(){
+        this.checkInitialization(!this.initialized);
+        return databaseConnectionPresenter.getPassword();
+    }
+
+    public String getConnectionURL(){
+        this.checkInitialization(!this.initialized);
+        return this.databaseConnectionPresenter.getConnectionURL();
+    }
+
+    public DatabaseConnection getConnection() {
+        try {
+            return this.databaseConnectionUseCase.getConnection();
+        } catch (DatabaseException e) {
+            throw new DatabaseInteractionException(e);
+        }
+    }
+
+    private void checkInitialization(boolean initialized) {
+        if(initialized) {
+            throw new IllegalStateException();
         }
     }
 

@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class ExampleTest extends DBTestCase {
 
@@ -15,6 +18,13 @@ public class ExampleTest extends DBTestCase {
     @Test
     public void test1() throws IOException {
         this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
+        String statement = "UPDATE TABLE1 SET TEST2 = 'value22_diff' WHERE ID = 2";
+        try(Connection con = this.getConnection(); PreparedStatement stmt =  con.prepareStatement(statement)){
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         this.assertEqualDataset(Paths.get("./src/test/dataset2.md"));
     }
 

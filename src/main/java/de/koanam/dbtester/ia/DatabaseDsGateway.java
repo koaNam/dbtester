@@ -3,11 +3,13 @@ package de.koanam.dbtester.ia;
 import de.koanam.dbtester.core.entity.TableBuilderFactory;
 import de.koanam.dbtester.core.entity.TableObject;
 import de.koanam.dbtester.framework.DatabaseException;
+import de.koanam.dbtester.framework.h2.JDBCDatabaseConnection;
 
 import java.util.Collection;
 
 public interface DatabaseDsGateway {
 
+    String getConnectionURL();
     void startDatabase(String username, String password) throws DatabaseException;
 
     void stopDatabase() throws DatabaseException;
@@ -19,5 +21,7 @@ public interface DatabaseDsGateway {
     int clearContent(TableObject table) throws DatabaseException;
 
     Collection<TableObject> getContent(TableBuilderFactory tableBuilderFactory) throws DatabaseException;
+
+    JDBCDatabaseConnection getConnection() throws DatabaseException;
 
 }

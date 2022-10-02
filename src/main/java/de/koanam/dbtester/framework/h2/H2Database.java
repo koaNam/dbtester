@@ -21,6 +21,11 @@ public class H2Database implements DatabaseDsGateway {
     private DataSource dataSource;
 
     @Override
+    public String getConnectionURL() {
+        return "jdbc:h2:mem:db4testing;DB_CLOSE_DELAY=-1";
+    }
+
+    @Override
     public void startDatabase(String username, String password) throws DatabaseException {
         try {
             this.h2server = Server.createTcpServer();
@@ -34,7 +39,8 @@ public class H2Database implements DatabaseDsGateway {
 
     private DataSource initDataSource(String username, String password) throws SQLException {
         JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setURL("jdbc:h2:mem:db4testing;DB_CLOSE_DELAY=-1");
+        String url = this.getConnectionURL();
+        dataSource.setURL(url);
         dataSource.setUser(username);
         dataSource.setPassword(password);
 
@@ -117,6 +123,15 @@ public class H2Database implements DatabaseDsGateway {
 
             return result;
         } catch (SQLException | H2DatabaseException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    @Override
+    public JDBCDatabaseConnection getConnection() throws DatabaseException {
+        try {
+            return new JDBCDatabaseConnection(this.dataSource.getConnection());
+        } catch (SQLException e) {
             throw new DatabaseException(e);
         }
     }

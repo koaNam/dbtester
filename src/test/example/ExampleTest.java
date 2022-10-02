@@ -16,6 +16,7 @@ public class ExampleTest extends DBTestCase {
     }
 
     @Test
+<<<<<<< HEAD:src/test/java/ExampleTest.java
     public void test1() throws IOException {
         this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
         String statement = "UPDATE TABLE1 SET TEST2 = 'value22_diff' WHERE ID = 2";
@@ -36,6 +37,9 @@ public class ExampleTest extends DBTestCase {
 
     @Test
     public void test3() throws IOException {
+=======
+    public void test() throws IOException {
+>>>>>>> ci-branch:src/test/example/ExampleTest.java
         this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
         this.assertEqualDataset(Paths.get("./src/test/dataset1.md"));
     }

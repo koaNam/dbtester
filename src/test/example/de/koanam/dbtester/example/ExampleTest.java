@@ -1,3 +1,5 @@
+package de.koanam.dbtester.example;
+
 import de.koanam.dbtester.framework.junit.DBTestCase;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

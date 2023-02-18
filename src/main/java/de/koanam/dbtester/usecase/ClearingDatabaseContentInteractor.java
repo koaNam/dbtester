@@ -11,6 +11,10 @@ import java.util.Collection;
 
 public class ClearingDatabaseContentInteractor extends DatabaseContentInteractor {
 
+    public ClearingDatabaseContentInteractor() {
+        super();
+    }
+
     public ClearingDatabaseContentInteractor(DatabaseDsGateway databaseDsGateway, TableParser tableParser) {
         super(databaseDsGateway, tableParser);
     }

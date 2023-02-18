@@ -22,6 +22,14 @@ public class DBTestCase {
         dbTestExtension.setInitialStatements(statements);
     }
 
+    static protected void setPostTestAction(PostTestAction postTestAction){
+        dbTestExtension.setDatabaseContentUseCase(postTestAction.getDatabaseContentInteractor());
+    }
+
+    static protected void setTableParser(TableParser tableParser){
+        dbTestExtension.setTableParser(tableParser.getTableParser());
+    }
+
     protected void setInitialDataset(Path path) throws IOException {
         String datasetContent = Files.readString(path);
 

@@ -15,9 +15,22 @@ public class DatabaseContentInteractor implements DatabaseContentInputBoundary {
     private DatabaseDsGateway databaseDsGateway;
     private TableParser tableParser;
 
+    public DatabaseContentInteractor() {
+    }
+
     public DatabaseContentInteractor(DatabaseDsGateway databaseDsGateway, TableParser tableParser) {
         this.databaseDsGateway = databaseDsGateway;
         this.tableParser = tableParser;
+    }
+
+    @Override
+    public void setTableParser(TableParser tableParser) {
+        this.tableParser = tableParser;
+    }
+
+    @Override
+    public void setDatabase(DatabaseDsGateway database) {
+        this.databaseDsGateway = database;
     }
 
     @Override
@@ -33,11 +46,11 @@ public class DatabaseContentInteractor implements DatabaseContentInputBoundary {
 
     }
 
-    public DatabaseDsGateway getDatabaseDsGateway() {
+    protected DatabaseDsGateway getDatabaseDsGateway() {
         return databaseDsGateway;
     }
 
-    public TableParser getTableParser() {
+    protected TableParser getTableParser() {
         return tableParser;
     }
 }

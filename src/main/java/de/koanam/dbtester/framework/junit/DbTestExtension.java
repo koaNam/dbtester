@@ -1,6 +1,7 @@
 package de.koanam.dbtester.framework.junit;
 
 import de.koanam.dbtester.core.entity.ContentDifference;
+import de.koanam.dbtester.core.entity.TableParser;
 import de.koanam.dbtester.core.entity.generic.GenericDatabaseCredentialGenerator;
 import de.koanam.dbtester.core.entity.generic.GenericTableBuilderFactory;
 import de.koanam.dbtester.core.entity.generic.MarkdownTableParser;
@@ -29,6 +30,7 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
     private String currentInitialDatasetContent;
 
     private H2Database db = new H2Database();
+    private TableParser tableParser = new MarkdownTableParser(new GenericTableBuilderFactory());
 
     private DatabaseConnectionPresenter databaseConnectionPresenter = new GenericDatabaseConnectionPresenter();
 
@@ -40,12 +42,12 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
 
     private DatabaseContentInputBoundary databaseContentUseCase = new ClearingDatabaseContentInteractor(
             db,
-            new MarkdownTableParser(new GenericTableBuilderFactory())
+            this.tableParser
     );
 
     private ComparisonInputBoundary comparisonUseCase = new ComparisonContentInteractor(
             db,
-            new MarkdownTableParser(new GenericTableBuilderFactory()),
+            this.tableParser,
             new GenericTableBuilderFactory()
     );
 
@@ -73,7 +75,17 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
         this.setUp();
     }
 
-    public void insertContent() {
+    void setDatabaseContentUseCase(DatabaseContentInputBoundary contentUseCase){
+        this.databaseContentUseCase = contentUseCase;
+        this.databaseContentUseCase.setDatabase(this.db);
+        this.databaseContentUseCase.setTableParser(this.tableParser);
+    }
+
+    void setTableParser(TableParser tableParser){
+        this.tableParser = tableParser;
+    }
+
+    void insertContent() {
         try {
             ByteArrayInputStream initialDataset = new ByteArrayInputStream(this.currentInitialDatasetContent.getBytes());
             this.databaseContentUseCase.insertContent(initialDataset);
@@ -82,15 +94,15 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
         }
     }
 
-    public void setInitialStatements(List<String> initialStatements) {
+    void setInitialStatements(List<String> initialStatements) {
         this.initialStatements = initialStatements;
     }
 
-    public void setCurrentInitialDatasetContent(String currentInitialDatasetContent) {
+    void setCurrentInitialDatasetContent(String currentInitialDatasetContent) {
         this.currentInitialDatasetContent = currentInitialDatasetContent;
     }
 
-    public void assertEqualDataset(String expectedDatasetContent) {
+     void assertEqualDataset(String expectedDatasetContent) {
         try {
             ByteArrayInputStream expectedDataset = new ByteArrayInputStream(expectedDatasetContent.getBytes());
 
@@ -103,22 +115,22 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
         }
     }
 
-    public String getUser(){
-        this.checkInitialization(!this.initialized);
+    String getUser(){
+        this.checkInitialization();
         return databaseConnectionPresenter.getUsername();
     }
 
-    public String getPassword(){
-        this.checkInitialization(!this.initialized);
+    String getPassword(){
+        this.checkInitialization();
         return databaseConnectionPresenter.getPassword();
     }
 
-    public String getConnectionURL(){
-        this.checkInitialization(!this.initialized);
+    String getConnectionURL(){
+        this.checkInitialization();
         return this.databaseConnectionPresenter.getConnectionURL();
     }
 
-    public DatabaseConnection getConnection() {
+    DatabaseConnection getConnection() {
         try {
             return this.databaseConnectionUseCase.getConnection();
         } catch (DatabaseException e) {
@@ -126,8 +138,8 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
         }
     }
 
-    private void checkInitialization(boolean initialized) {
-        if(initialized) {
+    private void checkInitialization() {
+        if(!initialized) {
             throw new IllegalStateException();
         }
     }

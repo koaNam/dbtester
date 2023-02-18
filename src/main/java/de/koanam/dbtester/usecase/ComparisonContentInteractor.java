@@ -31,6 +31,7 @@ public class ComparisonContentInteractor implements ComparisonInputBoundary {
         Collection<TableObject> otherDataset = this.tableParser.parseTables(input);
         Collection<TableObject> currentDataset = this.databaseDsGateway.getContent(this.tableBuilderFactory);
 
+        // TODO changeable comparison methode
         Collection<ContentDifference> differences = new TableIntersectionDatabaseContentComparator().compare(otherDataset, currentDataset);
         return differences;
     }

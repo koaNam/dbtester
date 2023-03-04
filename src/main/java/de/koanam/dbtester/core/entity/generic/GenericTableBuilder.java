@@ -4,6 +4,7 @@ import de.koanam.dbtester.core.entity.TableBuilder;
 import de.koanam.dbtester.core.entity.UnfittingTableFormatException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GenericTableBuilder implements TableBuilder {
@@ -51,7 +52,7 @@ public class GenericTableBuilder implements TableBuilder {
     }
 
     private void initColumnNameMap(List<String> row){
-        this.columnNames = new ArrayList<>(row.size());
+        this.columnNames = new ArrayList<>(Collections.nCopies(row.size(), null));
     }
 
 

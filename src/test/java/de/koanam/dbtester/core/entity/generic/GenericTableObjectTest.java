@@ -14,12 +14,12 @@ class GenericTableObjectTest {
 
     @Test
     public void addValues() {
-        GenericTableObject table = new GenericTableObject("Test Table");
+        GenericTableObject table = new GenericTableObject("TEST TABLE");
         table.addValues(Arrays.asList("Column1", "Column2"), Arrays.asList("Value11", "Value12"));
         table.addValues(Arrays.asList("Column1", "Column2"), Arrays.asList("Value21", "Value22"));
 
         String actualTableName = table.getTableName();
-        String expectedTableName = "Test Table";
+        String expectedTableName = "TEST TABLE";
 
         Assertions.assertEquals(expectedTableName, actualTableName);
     }
@@ -78,7 +78,7 @@ class GenericTableObjectTest {
 
         Collection<ContentDifference> actual = table1.getDifferences(table2);
 
-        GenericContentDifference expected = new GenericContentDifference("TABLE1", "test2", "value22", "value22_diff");
+        GenericContentDifference expected = new GenericContentDifference("TABLE1", "TEST2", "value22", "value22_diff");
         Assertions.assertEquals(Arrays.asList(expected), actual);
     }
 
@@ -100,7 +100,7 @@ class GenericTableObjectTest {
 
         Collection<ContentDifference> actual = table1.getDifferences(table2);
 
-        GenericContentDifference expected = new GenericContentDifference("TABLE1", "test1", "value11_diff", "value11");
+        GenericContentDifference expected = new GenericContentDifference("TABLE1", "TEST1", "value11_diff", "value11");
         Assertions.assertEquals(Arrays.asList(expected), actual);
     }
 

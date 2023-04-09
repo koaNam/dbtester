@@ -67,7 +67,7 @@ public class TableIntersectionDatabaseContentComparatorTest {
 
         Collection<ContentDifference> actual = comparator.compare(tablesDifference, tables);
 
-        GenericContentDifference difference = new GenericContentDifference("TABLE2", "test4", "value24_diff", "value24");
+        GenericContentDifference difference = new GenericContentDifference("TABLE2", "TEST4", "value24_diff", "value24");
         Assertions.assertEquals(Collections.singletonList(difference), actual);
     }
 
@@ -100,7 +100,7 @@ public class TableIntersectionDatabaseContentComparatorTest {
 
         Collection<ContentDifference> actual = comparator.compare(tables, tablesDifference);
 
-        GenericContentDifference difference = new GenericContentDifference("TABLE1", "test1", "value11", "value11_diff");
+        GenericContentDifference difference = new GenericContentDifference("TABLE1", "TEST1", "value11", "value11_diff");
         Assertions.assertEquals(Collections.singletonList(difference), actual);
     }
 

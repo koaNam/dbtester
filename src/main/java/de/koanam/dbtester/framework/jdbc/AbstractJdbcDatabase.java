@@ -1,12 +1,11 @@
-package de.koanam.dbtester.framework.h2;
+package de.koanam.dbtester.framework.jdbc;
 
 import de.koanam.dbtester.core.entity.TableBuilder;
 import de.koanam.dbtester.core.entity.TableBuilderFactory;
 import de.koanam.dbtester.core.entity.TableObject;
 import de.koanam.dbtester.framework.DatabaseException;
+import de.koanam.dbtester.framework.jdbc.h2.H2DatabaseException;
 import de.koanam.dbtester.ia.DatabaseDsGateway;
-import org.h2.jdbcx.JdbcDataSource;
-import org.h2.tools.Server;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -15,52 +14,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class H2Database implements DatabaseDsGateway {
+public abstract class AbstractJdbcDatabase implements DatabaseDsGateway {
 
-    private Server h2server;
-    private DataSource dataSource;
-
-    @Override
-    public String getConnectionURL() {
-        return "jdbc:h2:mem:db4testing;DB_CLOSE_DELAY=-1";
-    }
+    protected DataSource dataSource;
 
     @Override
-    public void startDatabase(String username, String password) throws DatabaseException {
+    public JDBCDatabaseConnection getConnection() throws DatabaseException {
         try {
-            this.h2server = Server.createTcpServer();
-            this.h2server.start();
-
-            this.dataSource = this.initDataSource(username, password);
+            Connection connection = this.getConnectionFromDataSource();
+            return new JDBCDatabaseConnection(connection);
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
     }
 
-    private DataSource initDataSource(String username, String password) throws SQLException {
-        JdbcDataSource dataSource = new JdbcDataSource();
-        String url = this.getConnectionURL();
-        dataSource.setURL(url);
-        dataSource.setUser(username);
-        dataSource.setPassword(password);
-
-        return dataSource;
+    private Connection getConnectionFromDataSource() throws SQLException {
+        Connection connection = this.dataSource.getConnection();
+        connection.setAutoCommit(false);
+        return connection;
     }
 
-    @Override
-    public void stopDatabase() throws DatabaseException {
-        try(Connection connection =this.dataSource.getConnection()) {
-            connection.prepareStatement("SHUTDOWN").executeUpdate();
-            this.h2server = null;
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
-    }
 
     @Override
     public void createDataStructure(String statement) throws DatabaseException {
-        try(Connection connection =this.dataSource.getConnection()) {
+        try(Connection connection =this.getConnectionFromDataSource()) {
             this.executeDDLStatement(statement, connection);
+            connection.commit();
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -69,7 +48,7 @@ public class H2Database implements DatabaseDsGateway {
     @Override
     public int insertContent(TableObject table) throws DatabaseException {
         List<Map<String, String>> tableContent = table.getContent();
-        try(Connection connection = this.dataSource.getConnection()){
+        try(Connection connection = this.getConnectionFromDataSource()){
             TableContentDAO tableContentDAO = new TableContentDAO(connection, table.getTableName());
             this.insertContent(tableContent, tableContentDAO);
             connection.commit();
@@ -81,10 +60,11 @@ public class H2Database implements DatabaseDsGateway {
 
     @Override
     public int clearContent(TableObject table) throws DatabaseException {
-        try(Connection connection = this.dataSource.getConnection()){
+        try(Connection connection = this.getConnectionFromDataSource()){
             this.restartSequences(connection);
 
             int deleteCount = this.deleteTableContent(table, connection);
+            connection.commit();
             return deleteCount;
         } catch (SQLException | H2DatabaseException e) {
             throw new DatabaseException(e);
@@ -92,7 +72,7 @@ public class H2Database implements DatabaseDsGateway {
     }
 
     private void restartSequences(Connection connection) throws H2DatabaseException {
-        DatabaseContentDAO databaseContentDAO = new DatabaseContentDAO(connection);
+        DatabaseContentDAO databaseContentDAO = this.getDatabaseContentDAO(connection);
         List<String> sequenceNames = databaseContentDAO.getAllSequences();
         for(String sequenceName: sequenceNames){
             databaseContentDAO.restartSequence(sequenceName, 0);
@@ -103,13 +83,13 @@ public class H2Database implements DatabaseDsGateway {
         TableContentDAO tableContentDAO = new TableContentDAO(connection, table.getTableName());
 
         int deleteCount = tableContentDAO.deleteTable();
-        connection.commit();
         return deleteCount;
     }
 
+    @Override
     public List<TableObject> getContent(TableBuilderFactory tableBuilderFactory) throws DatabaseException {
         try(Connection connection = this.dataSource.getConnection()){
-            DatabaseContentDAO databaseContentDAO = new DatabaseContentDAO(connection);
+            DatabaseContentDAO databaseContentDAO = this.getDatabaseContentDAO(connection);
             List<String> tableNames = databaseContentDAO.getAllTables();
 
             List<TableObject> result = new ArrayList<>();
@@ -123,15 +103,6 @@ public class H2Database implements DatabaseDsGateway {
 
             return result;
         } catch (SQLException | H2DatabaseException e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    @Override
-    public JDBCDatabaseConnection getConnection() throws DatabaseException {
-        try {
-            return new JDBCDatabaseConnection(this.dataSource.getConnection());
-        } catch (SQLException e) {
             throw new DatabaseException(e);
         }
     }
@@ -160,4 +131,5 @@ public class H2Database implements DatabaseDsGateway {
         con.prepareStatement(statement).executeUpdate();
     }
 
+    protected abstract DatabaseContentDAO getDatabaseContentDAO(Connection con);
 }

@@ -1,4 +1,4 @@
-package de.koanam.dbtester.framework.h2;
+package de.koanam.dbtester.framework.jdbc;
 
 import java.sql.*;
 import java.util.*;
@@ -14,8 +14,6 @@ public class TableContentDAO {
     private static final String DELETE_STATEMENT = "DELETE FROM " + TABLE_PLACEHOLDER;
 
     private static final String SELECT_ALL_STATEMENT = "SELECT * FROM " + TABLE_PLACEHOLDER;
-
-    private static final String SHOW_TABLES = "SHOW TABLES";
 
 
     private Connection connection;

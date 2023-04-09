@@ -1,4 +1,4 @@
-package de.koanam.dbtester.framework.h2;
+package de.koanam.dbtester.framework.jdbc;
 
 import de.koanam.dbtester.ia.DatabaseConnection;
 
@@ -17,7 +17,4 @@ public class JDBCDatabaseConnection implements DatabaseConnection<Connection> {
         return this.connection;
     }
 
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
 }

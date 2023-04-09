@@ -3,7 +3,7 @@ package de.koanam.dbtester.ia;
 import de.koanam.dbtester.core.entity.TableBuilderFactory;
 import de.koanam.dbtester.core.entity.TableObject;
 import de.koanam.dbtester.framework.DatabaseException;
-import de.koanam.dbtester.framework.h2.JDBCDatabaseConnection;
+import de.koanam.dbtester.framework.jdbc.JDBCDatabaseConnection;
 
 import java.util.Collection;
 

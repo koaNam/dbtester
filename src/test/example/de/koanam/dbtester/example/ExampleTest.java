@@ -1,6 +1,7 @@
 package de.koanam.dbtester.example;
 
 import de.koanam.dbtester.framework.junit.DBTestCase;
+import de.koanam.dbtester.framework.junit.Database;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -15,14 +16,16 @@ public class ExampleTest extends DBTestCase {
     @BeforeAll
     static void setUp() throws IOException {
         DBTestCase.setPathToDDLs(Paths.get("./src/test/ddl.sql"));
+        DBTestCase.setDatabase(Database.PLAIN_H2);
     }
 
     @Test
     public void test1() throws IOException {
         this.setInitialDataset(Paths.get("./src/test/dataset1.md"));
-        String statement = "UPDATE TABLE1 SET TEST2 = 'value22_diff' WHERE ID = 2";
+        String statement = "UPDATE TABLE1 SET TEST2 = 'value22_diff' WHERE ID = '2'";
         try(Connection con = this.getConnection(); PreparedStatement stmt =  con.prepareStatement(statement)){
             stmt.executeUpdate();
+            con.commit();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

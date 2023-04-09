@@ -1,6 +1,6 @@
 package de.koanam.dbtester.framework.junit;
 
-import de.koanam.dbtester.framework.h2.JDBCDatabaseConnection;
+import de.koanam.dbtester.framework.jdbc.JDBCDatabaseConnection;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
@@ -28,6 +28,10 @@ public class DBTestCase {
 
     static protected void setTableParser(TableParser tableParser){
         dbTestExtension.setTableParser(tableParser.getTableParser());
+    }
+
+    static protected void setDatabase(Database database){
+        dbTestExtension.setDatabase(database.getDatabase());
     }
 
     protected void setInitialDataset(Path path) throws IOException {

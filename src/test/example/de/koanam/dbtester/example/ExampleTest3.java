@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class ExampleTest2 extends DBTestCase {
+public class ExampleTest3 extends DBTestCase {
 
     @BeforeAll
     static void setUp() throws IOException {

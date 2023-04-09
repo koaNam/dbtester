@@ -8,11 +8,8 @@ import de.koanam.dbtester.core.entity.generic.MarkdownTableParser;
 import de.koanam.dbtester.framework.DatabaseException;
 import de.koanam.dbtester.framework.DatabaseInteractionException;
 import de.koanam.dbtester.framework.InitializationException;
-import de.koanam.dbtester.framework.h2.H2Database;
-import de.koanam.dbtester.ia.ComparisonInputBoundary;
-import de.koanam.dbtester.ia.DatabaseConnection;
-import de.koanam.dbtester.ia.DatabaseConnectionInputBoundary;
-import de.koanam.dbtester.ia.DatabaseContentInputBoundary;
+import de.koanam.dbtester.framework.jdbc.h2.H2Database;
+import de.koanam.dbtester.ia.*;
 import de.koanam.dbtester.usecase.*;
 import org.junit.jupiter.api.extension.*;
 import org.opentest4j.AssertionFailedError;
@@ -29,24 +26,20 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
 
     private String currentInitialDatasetContent;
 
-    private H2Database db = new H2Database();
+    private DatabaseDsGateway database = new H2Database();
     private TableParser tableParser = new MarkdownTableParser(new GenericTableBuilderFactory());
 
     private DatabaseConnectionPresenter databaseConnectionPresenter = new GenericDatabaseConnectionPresenter();
 
-    private DatabaseConnectionInputBoundary databaseConnectionUseCase = new DatabaseConnectionInteractor(
-            databaseConnectionPresenter,
-            db,
-            new GenericDatabaseCredentialGenerator()
-    );
+    private DatabaseConnectionInputBoundary databaseConnectionUseCase;
 
     private DatabaseContentInputBoundary databaseContentUseCase = new ClearingDatabaseContentInteractor(
-            db,
+            database,
             this.tableParser
     );
 
     private ComparisonInputBoundary comparisonUseCase = new ComparisonContentInteractor(
-            db,
+            database,
             this.tableParser,
             new GenericTableBuilderFactory()
     );
@@ -77,12 +70,16 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
 
     void setDatabaseContentUseCase(DatabaseContentInputBoundary contentUseCase){
         this.databaseContentUseCase = contentUseCase;
-        this.databaseContentUseCase.setDatabase(this.db);
+        this.databaseContentUseCase.setDatabase(this.database);
         this.databaseContentUseCase.setTableParser(this.tableParser);
     }
 
     void setTableParser(TableParser tableParser){
         this.tableParser = tableParser;
+    }
+
+    void setDatabase(DatabaseDsGateway database){
+        this.database = database;
     }
 
     void insertContent() {
@@ -155,11 +152,28 @@ public class DbTestExtension implements AfterAllCallback, BeforeEachCallback, Af
 
     private void initialize() {
         try {
+            this.initUseCases();
+
             this.databaseConnectionUseCase.initDatabase(this.initialStatements);
             this.initialized = true;
         } catch (DatabaseException e) {
             throw new InitializationException(e);
         }
+    }
+
+    private void initUseCases(){
+        this.databaseConnectionUseCase = new DatabaseConnectionInteractor(
+                databaseConnectionPresenter,
+                database,
+                new GenericDatabaseCredentialGenerator()
+        );
+        this.comparisonUseCase =  new ComparisonContentInteractor(
+                database,
+                this.tableParser,
+                new GenericTableBuilderFactory()
+        );
+        this.databaseContentUseCase.setDatabase(this.database);
+        this.databaseContentUseCase.setTableParser(this.tableParser);
     }
 
     private String formatErrorMessage(Collection<ContentDifference> differences) {

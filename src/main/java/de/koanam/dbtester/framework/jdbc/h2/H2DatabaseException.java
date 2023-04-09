@@ -1,4 +1,4 @@
-package de.koanam.dbtester.framework.h2;
+package de.koanam.dbtester.framework.jdbc.h2;
 
 public class H2DatabaseException extends Exception{
 

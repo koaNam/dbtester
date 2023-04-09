@@ -19,14 +19,14 @@ public class GenericTableObject implements TableObject {
     Table<Long, String, String> values;
 
     GenericTableObject(String tableName) {
-        this.tableName = tableName;
+        this.tableName = tableName.toUpperCase();
         this.values = HashBasedTable.create();
     }
 
     void addValues(List<String> columnNames, List<String> values) {
         long lastPosition = this.values.rowKeySet().size();
         Streams
-                .zip(columnNames.stream(), values.stream(), (c, v) -> new String[]{c, v})
+                .zip(columnNames.stream(), values.stream(), (c, v) -> new String[]{c.toUpperCase(), v})
                 .forEach(pair -> this.values.put(lastPosition, pair[0], pair[1]));
     }
 
